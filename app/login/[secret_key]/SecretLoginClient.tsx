@@ -14,12 +14,14 @@ import {
   CheckCircle2,
   KeyRound,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface SecretLoginClientProps {
   secretKey: string;
 }
 
 export default function SecretLoginClient({ secretKey }: SecretLoginClientProps) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -68,8 +70,13 @@ export default function SecretLoginClient({ secretKey }: SecretLoginClientProps)
         localStorage.setItem("insightpoll_user", JSON.stringify(result.data.user));
       }
 
-      setSuccessMessage("Autentikasi berhasil! Selamat datang kembali.");
+      setSuccessMessage("Autentikasi berhasil! Mengalihkan ke dashboard...");
       setUserProfile(result?.data?.user || null);
+
+      // Redirect otomatis ke dashboard
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 800);
     } catch (err) {
       setErrorMessage((err as Error).message);
     } finally {
