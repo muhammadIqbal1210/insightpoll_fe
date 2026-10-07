@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #0f172a;
+    --surface: #f8fafc;
+    --surface-hover: #f1f5f9;
+    --border: #e2e8f0;
+    --primary: #01F2D1;
+    --primary-dark: #00d2b5;
+    --primary-glow: rgba(1, 242, 209, 0.25);
+    --text-muted: #5e6470;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+}
+
+/* Custom Utilities for Executive Intelligence Design */
+.bg-grid-light {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+
+.bg-finorio-columns {
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent calc(16.666% - 1px),
+    rgba(0, 0, 0, 0.03) calc(16.666% - 1px),
+    rgba(0, 0, 0, 0.03) 16.666%
+  );
+}
+
+.bg-dots-light {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.glow-cyan {
+  box-shadow: 0 0 35px -5px rgba(1, 242, 209, 0.35);
+}
+
+.glow-cyan-sm {
+  box-shadow: 0 0 15px -2px rgba(1, 242, 209, 0.4);
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
