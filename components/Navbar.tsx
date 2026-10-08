@@ -25,9 +25,10 @@ export default function Navbar() {
             <Image
               src="/logo.webp"
               alt="InsightPoll.id Logo"
-              width={80}
-              height={100}
-              className="object-contain object-left"
+              width={140}
+              height={40}
+              style={{ width: "auto", height: "auto" }}
+              className="object-contain object-left max-h-10"
               priority
             />
           </div>
@@ -49,16 +50,10 @@ export default function Navbar() {
         {/* CTA Group */}
         <div className="hidden md:flex items-center gap-3">
           <Link
-            href="#preview"
-            className="text-sm font-medium text-slate-700 hover:text-slate-950 px-4 py-2 rounded-full border border-transparent hover:border-[#ded5f8] hover:bg-white/80 transition-all"
-          >
-            Live Demo
-          </Link>
-          <Link
-            href="#contact"
+            href="/#contact"
             className="inline-flex items-center gap-2 rounded-full bg-[#00d2b5] px-6 py-2.5 text-sm font-medium text-white shadow-xs transition-all hover:bg-[#00be9f] hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
           >
-            <span>Minta Demo</span>
+            <span>Jadwalkan Konsultasi</span>
             <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
           </Link>
         </div>

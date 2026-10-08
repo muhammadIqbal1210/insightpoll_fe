@@ -9,7 +9,7 @@ export default async function SecretLoginPage({
   const resolvedParams = await params;
   const secretKey = resolvedParams.secret_key;
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Verifikasi ke Backend secara Server-to-Server
   // Backend menjadi single source of truth untuk secret key

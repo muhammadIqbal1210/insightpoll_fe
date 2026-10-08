@@ -12,10 +12,17 @@ import {
   ArrowRight,
   TrendingUp,
   Clock,
+  Eye,
 } from "lucide-react";
 import { formatDateTime, formatTimeAgo } from "@/data/dateUtils";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+interface TagItem {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 interface PostDetail {
   id: string;
@@ -25,6 +32,8 @@ interface PostDetail {
   content: string;
   category: string;
   coverImage?: string;
+  views?: number;
+  tags?: TagItem[];
   createdAt: string;
   author?: {
     name?: string;
@@ -53,7 +62,7 @@ export default function BlogDetailPage({
     const fetchPostAndSuggestions = async () => {
       try {
         setIsLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const res = await fetch(`${apiUrl}/posts?status=PUBLISHED`);
         if (!res.ok) throw new Error("Gagal memuat artikel");
         const json = await res.json();
@@ -66,6 +75,19 @@ export default function BlogDetailPage({
           // Berita yang disarankan: kecualikan artikel yang sedang dibaca saat ini
           const others = allPosts.filter((item) => item.slug !== resolvedSlug);
           setSuggestedPosts(others.slice(0, 5));
+
+          // Catat view pembaca ke backend (cegah spam dengan sessionStorage)
+          const viewedKey = `viewed_post_${found.id}`;
+          if (typeof window !== "undefined" && !sessionStorage.getItem(viewedKey)) {
+            fetch(`${apiUrl}/posts/${found.id}/view`, { method: "POST" })
+              .then((viewRes) => {
+                if (viewRes.ok) {
+                  sessionStorage.setItem(viewedKey, "true");
+                  setPost((prev) => (prev ? { ...prev, views: (prev.views || 0) + 1 } : null));
+                }
+              })
+              .catch(() => {});
+          }
         } else {
           setErrorMsg("Artikel atau opini riset tidak ditemukan.");
         }
@@ -79,7 +101,7 @@ export default function BlogDetailPage({
     fetchPostAndSuggestions();
   }, [resolvedSlug]);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const formatDate = (dateStr: string) => {
     try {
@@ -188,12 +210,32 @@ export default function BlogDetailPage({
 
               {/* Isi Konten Lengkap (Format HTML dari Rich Text Editor) */}
               <div
-                className="prose prose-slate max-w-none text-slate-800 leading-relaxed text-sm sm:text-base space-y-4"
+                className="article-content prose prose-slate max-w-none text-slate-800 leading-relaxed text-sm sm:text-base space-y-4"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
 
+              {/* Tags Section */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-slate-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Tag className="w-3.5 h-3.5 text-teal-600" />
+                    <span className="text-xs font-semibold text-slate-700">Topik &amp; Tag Terkait:</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map((t) => (
+                      <span
+                        key={t.id}
+                        className="inline-flex items-center text-xs font-medium text-slate-700 bg-slate-100 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-300 border border-slate-200/80 px-3 py-1 rounded-xl transition cursor-pointer"
+                      >
+                        #{t.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Footer Section Artikel */}
-              <div className="mt-12 pt-6 border-t border-slate-100 flex items-center justify-between">
+              <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
                 <span className="text-xs text-slate-400">
                   Dipublikasikan oleh Tim Riset &amp; Intelligence InsightPoll.id
                 </span>

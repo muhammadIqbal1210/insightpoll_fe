@@ -24,7 +24,7 @@ export default function InsightsSection() {
     const fetchPublishedPosts = async () => {
       try {
         setIsLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const res = await fetch(`${apiUrl}/posts?status=PUBLISHED`);
         if (res.ok) {
           const json = await res.json();
@@ -42,7 +42,7 @@ export default function InsightsSection() {
     fetchPublishedPosts();
   }, []);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Pembagian data asli murni dari database:
   // Kartu Utama (Index 0)

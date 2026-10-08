@@ -8,17 +8,42 @@ import {
   AlertCircle,
   CheckCircle2,
   Trash2,
+  Edit,
   Tag as TagIcon,
 } from "lucide-react";
 import RichTextEditor from "./RichTextEditor";
 
-interface AddBlogModalProps {
+interface TagItem {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  summary?: string;
+  content: string;
+  category: string;
+  coverImage?: string;
+  status: string;
+  tags?: TagItem[];
+}
+
+interface EditBlogModalProps {
   isOpen: boolean;
+  post: BlogPost | null;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModalProps) {
+export default function EditBlogModal({
+  isOpen,
+  post,
+  onClose,
+  onSuccess,
+}: EditBlogModalProps) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Berita Riset");
   const [availableCategories, setAvailableCategories] = useState<{ id: string; name: string }[]>([]);
@@ -39,7 +64,7 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch daftar kategori & tags dari backend
+  // Ambil daftar kategori & tags aktif
   useEffect(() => {
     if (isOpen) {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -48,7 +73,6 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
         .then((json) => {
           if (json.data && json.data.length > 0) {
             setAvailableCategories(json.data);
-            setCategory(json.data[0].name);
           }
         })
         .catch((err) => console.error("Error loading categories:", err));
@@ -64,6 +88,21 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
     }
   }, [isOpen]);
 
+  // Isi form dengan data post yang dipilih
+  useEffect(() => {
+    if (post) {
+      setTitle(post.title || "");
+      setCategory(post.category || "Berita Riset");
+      setSummary(post.summary || "");
+      setContent(post.content || "");
+      setCoverImage(post.coverImage || "");
+      setStatus(post.status || "PUBLISHED");
+      setTags((post.tags || []).map((t) => t.name));
+      setErrorMsg("");
+      setSuccessMsg("");
+    }
+  }, [post]);
+
   const handleAddTag = (val?: string) => {
     const rawTag = (val !== undefined ? val : tagInput).trim();
     if (!rawTag) return;
@@ -78,9 +117,9 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
     setTags(tags.filter((t) => t !== tagToRemove));
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !post) return null;
 
-  // Handle Upload File Gambar Cover
+  // Handle Upload Gambar Cover Baru
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -109,10 +148,10 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
 
       const json = await res.json();
       if (!res.ok) {
-        throw new Error(json.message || "Gagal mengunggah file cover.");
+        throw new Error(json.message || "Gagal mengunggah file");
       }
 
-      setCoverImage(json.fileUrl);
+      setCoverImage(json.data.url);
     } catch (err) {
       setErrorMsg((err as Error).message);
     } finally {
@@ -120,15 +159,15 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
     }
   };
 
-  const handleRemoveCover = () => {
-    setCoverImage("");
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
+
+    if (!content.trim() || content === "<p></p>") {
+      setErrorMsg("Isi konten artikel riset wajib diisi!");
+      return;
+    }
 
     const token = localStorage.getItem("insightpoll_token");
     if (!token) {
@@ -136,49 +175,41 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
       return;
     }
 
-    // Bersihkan tag HTML kosong sebelum validasi
-    const strippedContent = content.replace(/<[^>]*>?/gm, "").trim();
-
-    if (!title.trim() || !strippedContent) {
-      setErrorMsg("Judul dan isi konten artikel wajib diisi.");
-      return;
-    }
-
     try {
       setIsLoading(true);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(`${apiUrl}/posts`, {
-        method: "POST",
+
+      const res = await fetch(`${apiUrl}/posts/${post.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title,
+          title: title.trim(),
           category,
-          summary,
+          summary: summary.trim() || undefined,
           content,
-          coverImage,
+          coverImage: coverImage || undefined,
           status,
           tags,
         }),
       });
 
-      const result = await res.json();
+      const json = await res.json();
       if (!res.ok) {
-        throw new Error(result.message || "Gagal menerbitkan artikel");
+        throw new Error(
+          Array.isArray(json.message)
+            ? json.message.join(", ")
+            : json.message || "Gagal memperbarui artikel."
+        );
       }
 
-      setSuccessMsg("Berita/artikel berhasil diterbitkan!");
+      setSuccessMsg("Artikel berita berhasil diperbarui!");
       setTimeout(() => {
-        setTitle("");
-        setSummary("");
-        setContent("");
-        setCoverImage("");
-        setTags([]);
         onSuccess();
         onClose();
-      }, 800);
+      }, 600);
     } catch (err) {
       setErrorMsg((err as Error).message);
     } finally {
@@ -186,17 +217,18 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
     }
   };
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-hidden flex flex-col">
         {/* Header Modal */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Tambah Berita / Artikel Baru</h2>
-            <p className="text-xs text-slate-500">
-              Publikasikan hasil riset, opini publik, atau berita survei terkini
+            <div className="flex items-center gap-2">
+              <Edit className="w-5 h-5 text-teal-600" />
+              <h3 className="text-base font-bold text-slate-900">Edit Artikel Riset / Berita</h3>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Perbarui judul, ringkasan, kategori, atau isi artikel publikasi
             </p>
           </div>
           <button
@@ -384,21 +416,25 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
           {/* UPLOAD FILE COVER (IMAGE) */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Cover Gambar Berita (Upload File)
+              Cover Gambar Berita
             </label>
 
             {coverImage ? (
-              <div className="relative rounded-xl overflow-hidden border border-slate-200 max-h-48 group bg-slate-50 flex items-center justify-center">
+              <div className="relative rounded-xl overflow-hidden border border-slate-200 max-h-52 bg-slate-100 group">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`${apiUrl}${coverImage}`}
+                  src={
+                    coverImage.startsWith("http")
+                      ? coverImage
+                      : `${process.env.NEXT_PUBLIC_API_URL}${coverImage}`
+                  }
                   alt="Cover Preview"
-                  className="w-full h-44 object-cover"
+                  className="w-full h-48 object-cover"
                 />
                 <button
                   type="button"
-                  onClick={handleRemoveCover}
-                  className="absolute top-2 right-2 p-1.5 rounded-lg bg-rose-600 text-white shadow-md hover:bg-rose-700 transition"
+                  onClick={() => setCoverImage("")}
+                  className="absolute top-2 right-2 p-1.5 bg-rose-600/90 hover:bg-rose-700 text-white rounded-lg shadow-md transition"
                   title="Hapus Cover"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -407,66 +443,72 @@ export default function AddBlogModal({ isOpen, onClose, onSuccess }: AddBlogModa
             ) : (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed border-slate-200 hover:border-slate-400 hover:bg-slate-50/50 rounded-xl p-5 text-center cursor-pointer transition ${isUploading ? "opacity-50 pointer-events-none" : ""
-                  }`}
+                className="border-2 border-dashed border-slate-200 hover:border-slate-400 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition bg-slate-50/50 hover:bg-slate-50"
               >
-                <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
+                <Upload className="w-8 h-8 text-slate-400 mb-2" />
                 <p className="text-xs font-medium text-slate-700">
-                  {isUploading ? "Mengunggah gambar..." : "Klik untuk upload gambar cover"}
+                  {isUploading ? "Mengunggah gambar..." : "Klik untuk unggah cover artikel (JPG, PNG, WEBP)"}
                 </p>
-                <p className="text-[11px] text-slate-400 mt-1">PNG, JPG, WEBP atau GIF (Maks. 5MB)</p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/png, image/jpeg, image/webp, image/gif"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
+                <p className="text-[10px] text-slate-400 mt-1">Ukuran maksimal file: 5 MB</p>
               </div>
             )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png, image/jpeg, image/webp, image/gif"
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </div>
 
           {/* Summary */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Ringkasan Singkat (Summary)</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Ringkasan Singkat (Summary)
+            </label>
             <textarea
               rows={2}
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
-              placeholder="Ringkasan poin utama artikel untuk preview card..."
+              placeholder="Ringkasan eksekutif 1-2 kalimat dari artikel ini..."
               className="w-full px-3.5 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400/20 focus:border-slate-500 transition resize-none"
             />
           </div>
 
-          {/* RICH TEXT EDITOR KONTEN LENGKAP */}
+          {/* Rich Text Editor CKEditor */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Konten Lengkap Berita (Text Editor) *
+              Konten Lengkap Berita & Riset *
             </label>
-            <RichTextEditor
-              value={content}
-              onChange={(val) => setContent(val)}
-              placeholder="Tuliskan isi berita, analisis metodologi survei, data spasial, temuan statistik dan kesimpulan..."
-            />
+            <div className="border border-slate-200 rounded-xl overflow-hidden focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-400/20 transition">
+              <RichTextEditor value={content} onChange={(data) => setContent(data)} />
+            </div>
           </div>
 
-          {/* Footer Actions */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+          {/* Actions */}
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={isLoading || isUploading}
-              className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition"
+              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isLoading || isUploading}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 active:scale-[0.99] rounded-xl shadow-xs transition disabled:opacity-50"
+              className="px-5 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 active:scale-[0.99] rounded-xl shadow-xs transition flex items-center gap-2 disabled:opacity-50"
             >
-              <Send className="w-4 h-4" />
-              <span>{isLoading ? "Menyimpan..." : "Publikasikan"}</span>
+              {isLoading ? (
+                <span>Menyimpan...</span>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Simpan Perubahan</span>
+                </>
+              )}
             </button>
           </div>
         </form>

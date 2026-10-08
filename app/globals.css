@@ -185,8 +185,18 @@ body {
 }
 
 .article-content a,
-.ckeditor-wrapper .ck-content a {
-  color: #0d9488;
-  font-weight: 600;
-  text-decoration: underline;
+.ckeditor-wrapper .ck-content a,
+.article-content p a {
+  color: #0d9488 !important;
+  font-weight: 600 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease !important;
+}
+
+.article-content a:hover,
+.ckeditor-wrapper .ck-content a:hover,
+.article-content p a:hover {
+  color: #0f766e !important;
+  text-decoration-color: #0f766e !important;
 }

@@ -40,7 +40,7 @@ export default function SecretLoginClient({ secretKey }: SecretLoginClientProps)
     setSuccessMessage("");
     setIsLoading(true);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     try {
       const response = await fetch(`${apiUrl}/login/${encodeURIComponent(secretKey)}`, {
@@ -96,9 +96,10 @@ export default function SecretLoginClient({ secretKey }: SecretLoginClientProps)
             <Image
               src="/logo.webp"
               alt="InsightPoll Logo"
-              width={80}
-              height={100}
-              className="object-contain object-left"
+              width={140}
+              height={40}
+              style={{ width: "auto", height: "auto" }}
+              className="object-contain object-left max-h-10"
               priority
             />
           </div>
