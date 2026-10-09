@@ -6,9 +6,10 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     container_name: insightpoll_frontend
+    image: insightpoll_frontend
     restart: always
     environment:
       PORT: 3000
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     ports:
-      - "${HOST_PORT:-3001}:3000"
+      - "${PORT}:3000"
