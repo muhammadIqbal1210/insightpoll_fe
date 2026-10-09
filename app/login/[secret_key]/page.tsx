@@ -1,5 +1,18 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SecretLoginClient from "./SecretLoginClient";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+};
 
 export default async function SecretLoginPage({
   params,
