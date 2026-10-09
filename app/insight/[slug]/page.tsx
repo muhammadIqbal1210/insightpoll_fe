@@ -274,7 +274,7 @@ export default function BlogDetailPage({
                     {suggestedPosts.map((sug) => (
                       <Link
                         key={sug.id}
-                        href={`/blog/${sug.slug}`}
+                        href={`/insight/${sug.slug}`}
                         className="group py-3.5 first:pt-0 last:pb-0 flex gap-3.5 items-start hover:bg-slate-50/80 p-2 rounded-xl transition"
                       >
                         {/* Thumbnail Kotak */}

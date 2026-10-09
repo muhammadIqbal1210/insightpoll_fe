@@ -279,7 +279,7 @@ export default function InsightNewsPage() {
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                     {/* Big Hero Headline Article (Col 7) */}
                     <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-xl hover:border-slate-300 transition-all duration-300 flex flex-col group">
-                      <Link href={`/blog/${headlinePost.slug}`} className="relative aspect-[16/9] w-full bg-slate-950 overflow-hidden block">
+                      <Link href={`/insight/${headlinePost.slug}`} className="relative aspect-[16/9] w-full bg-slate-950 overflow-hidden block">
                         {headlinePost.coverImage ? (
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img
@@ -327,7 +327,7 @@ export default function InsightNewsPage() {
                           </div>
 
                           <Link
-                            href={`/blog/${headlinePost.slug}`}
+                            href={`/insight/${headlinePost.slug}`}
                             className="inline-flex items-center gap-1.5 font-bold text-slate-900 hover:text-[#00a892] group-hover:translate-x-1 transition-all"
                           >
                             <span>Baca Lengkap</span>
@@ -342,7 +342,7 @@ export default function InsightNewsPage() {
                       {secondaryHeadlines.map((post) => (
                         <Link
                           key={post.id}
-                          href={`/blog/${post.slug}`}
+                          href={`/insight/${post.slug}`}
                           className="group bg-white rounded-2xl border border-slate-200/90 p-4 hover:border-slate-300 hover:shadow-md transition-all duration-200 flex gap-4 items-center"
                         >
                           <div className="relative w-28 h-24 sm:w-32 sm:h-24 rounded-xl bg-slate-900 overflow-hidden shrink-0">
@@ -405,7 +405,7 @@ export default function InsightNewsPage() {
                     {(currentPage === 1 && !selectedTag && !debouncedSearch ? feedPosts : posts).map((post) => (
                       <Link
                         key={post.id}
-                        href={`/blog/${post.slug}`}
+                        href={`/insight/${post.slug}`}
                         className="group bg-white rounded-2xl border border-slate-200/90 overflow-hidden hover:border-[#00d2b5] hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                       >
                         <div>
@@ -488,7 +488,7 @@ export default function InsightNewsPage() {
                       {trendingSidebar.map((post, idx) => (
                         <Link
                           key={post.id}
-                          href={`/blog/${post.slug}`}
+                          href={`/insight/${post.slug}`}
                           className={`group pt-4 first:pt-0 flex items-start gap-3.5 block`}
                         >
                           <span className="w-6 h-6 rounded-lg bg-slate-100 text-slate-900 font-mono font-bold text-xs flex items-center justify-center shrink-0 group-hover:bg-[#00d2b5] transition-colors">

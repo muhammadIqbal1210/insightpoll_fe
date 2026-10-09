@@ -139,7 +139,7 @@ export default function InsightsSection() {
 
                   <div>
                     <Link
-                      href={`/blog/${mainFeature.slug}`}
+                      href={`/insight/${mainFeature.slug}`}
                       className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#00d2b5] hover:text-[#56fde6] transition-colors group/link"
                     >
                       <span>Baca Artikel Riset</span>
@@ -213,7 +213,7 @@ export default function InsightsSection() {
 
                       <div>
                         <Link
-                          href={`/blog/${sub.slug}`}
+                          href={`/insight/${sub.slug}`}
                           className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#00d2b5] hover:text-teal-700 transition-colors group/link"
                         >
                           <span>Baca Selengkapnya</span>
@@ -256,7 +256,7 @@ export default function InsightsSection() {
                   {sideArticles.map((art) => (
                     <Link
                       key={art.id}
-                      href={`/blog/${art.slug}`}
+                      href={`/insight/${art.slug}`}
                       className="group py-4 first:pt-0 last:pb-4 flex gap-4 items-start hover:bg-slate-50/70 p-2.5 rounded-2xl transition-all"
                     >
                       <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-xl bg-gradient-to-br from-teal-800 to-slate-900 shrink-0 overflow-hidden relative flex items-center justify-center border border-slate-100">
