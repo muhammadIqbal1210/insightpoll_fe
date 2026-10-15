@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -22,6 +22,7 @@ interface SecretLoginClientProps {
 
 export default function SecretLoginClient({ secretKey }: SecretLoginClientProps) {
   const router = useRouter();
+  const [isVerifyingToken, setIsVerifyingToken] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -33,6 +34,42 @@ export default function SecretLoginClient({ secretKey }: SecretLoginClientProps)
     email?: string;
     role?: string;
   } | null>(null);
+
+  // Periksa apakah user sudah login dan token masih valid
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      const token = localStorage.getItem("insightpoll_token");
+      if (!token) {
+        setIsVerifyingToken(false);
+        return;
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      try {
+        const response = await fetch(`${apiUrl}/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          // Token masih valid, arahkan langsung ke dashboard
+          router.replace("/dashboard");
+          return;
+        } else {
+          // Token kadaluarsa atau tidak valid, bersihkan localStorage
+          localStorage.removeItem("insightpoll_token");
+          localStorage.removeItem("insightpoll_user");
+          setIsVerifyingToken(false);
+        }
+      } catch (err) {
+        // Jika offline atau error jaringan, izinkan form login tampil
+        setIsVerifyingToken(false);
+      }
+    };
+
+    checkExistingSession();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +120,14 @@ export default function SecretLoginClient({ secretKey }: SecretLoginClientProps)
       setIsLoading(false);
     }
   };
+
+  if (isVerifyingToken) {
+    return (
+      <div className="min-h-screen w-full bg-[#f8fafc] flex items-center justify-center">
+        <div className="w-7 h-7 border-2 border-slate-200 border-t-[#00d2b5] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-900 flex flex-col justify-between selection:bg-[#01F2D1]/30">
