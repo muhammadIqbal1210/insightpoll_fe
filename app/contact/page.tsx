@@ -104,8 +104,8 @@ export default function ContactPage() {
                       </div>
                       <div className="space-y-0.5">
                         <div className="text-xs text-slate-500 font-medium tracking-wide uppercase">Email Eksekutif</div>
-                        <div className="text-sm sm:text-base font-semibold text-slate-900">
-                          intelligence@insightpoll.id
+                        <div className="text-sm sm:text-base font-medium text-slate-900">
+                          admin@insightpoll.id
                         </div>
                       </div>
                     </div>
@@ -116,8 +116,8 @@ export default function ContactPage() {
                       </div>
                       <div className="space-y-0.5">
                         <div className="text-xs text-slate-500 font-medium tracking-wide uppercase">Hotline &amp; WhatsApp</div>
-                        <div className="text-sm sm:text-base font-semibold text-slate-900 font-mono">
-                          +62 811-8899-2024 / +62 21-5290-7800
+                        <div className="text-sm sm:text-base font-medium text-slate-900">
+                          +6281363061733
                         </div>
                       </div>
                     </div>
@@ -128,10 +128,9 @@ export default function ContactPage() {
                       </div>
                       <div className="space-y-0.5">
                         <div className="text-xs text-slate-500 font-medium tracking-wide uppercase">Headquarters</div>
-                        <div className="text-sm sm:text-base font-semibold text-slate-900">
-                          SCBD Sudirman &amp; IKN Nusantara Intelligence Center
+                        <div className="text-sm sm:text-base font-medium text-slate-900">
+                          Kota Padang, Sumatera Barat
                         </div>
-                        <div className="text-xs text-slate-500 mt-0.5">Jakarta Selatan, DKI Jakarta 12190</div>
                       </div>
                     </div>
                   </div>

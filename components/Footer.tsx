@@ -29,8 +29,8 @@ export default function Footer() {
                 <Image
                   src="/logo.webp"
                   alt="InsightPoll.id Logo"
-                  width={150}
-                  height={42}
+                  width={80}
+                  height={40}
                   style={{ width: "auto", height: "auto" }}
                   className="object-contain"
                 />
@@ -43,15 +43,15 @@ export default function Footer() {
               <div className="space-y-2.5 text-xs text-slate-400">
                 <div className="flex items-center gap-2.5">
                   <Mail className="w-3.5 h-3.5 text-[#00d2b5] shrink-0" />
-                  <span className="font-mono text-slate-300">intelligence@insightpoll.id</span>
+                  <span className="text-slate-300">admin@insightpoll.id</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Phone className="w-3.5 h-3.5 text-[#00d2b5] shrink-0" />
-                  <span className="font-mono text-slate-300">+62 811-8899-2024 / +62 21-5290-7800</span>
+                  <span className="text-slate-300">+6281363061733</span>
                 </div>
                 <div className="flex items-start gap-2.5">
                   <MapPin className="w-3.5 h-3.5 text-[#00d2b5] shrink-0 mt-0.5" />
-                  <span className="text-slate-400">SCBD Sudirman &amp; IKN Nusantara Intelligence Center</span>
+                  <span className="text-slate-400">Kota Padang, Sumatera Barat</span>
                 </div>
               </div>
             </div>
@@ -163,11 +163,6 @@ export default function Footer() {
                   Kemitraan Lembaga &amp; Kampus
                 </Link>
               </li>
-              <li className="pt-2">
-                <span className="text-slate-500 block text-xs">
-                  Standar Etika Riset Perhimpunan Survei Opini Publik Indonesia (PERSEPI)
-                </span>
-              </li>
             </ul>
           </div>
         </div>
@@ -175,7 +170,7 @@ export default function Footer() {
         {/* Bottom Bar: Hak Cipta & Keamanan Data */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            &copy; {currentYear} <strong className="text-slate-400 font-medium">InsightPoll.id</strong> (PT Insight Nusantara Digital). All rights reserved.
+            &copy; {currentYear} <strong className="text-slate-400 font-medium">InsightPoll.id</strong> (PT Insightpoll Indonesia). All rights reserved.
           </div>
 
           <div className="flex flex-wrap items-center gap-6">
