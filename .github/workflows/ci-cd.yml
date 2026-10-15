@@ -61,8 +61,6 @@ jobs:
             # Build dan restart container Docker
             docker compose down
             docker compose up -d --build
-
-            # Bersihkan cache image lama
             docker image prune -f
 
             echo "🚀 Frontend successfully deployed!"
